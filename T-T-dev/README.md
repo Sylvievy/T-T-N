@@ -1,0 +1,1 @@
+Desktop app with Next.js and Tauri

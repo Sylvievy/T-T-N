@@ -239,10 +239,10 @@ export const QuickAddTask = () => {
       const result = await postRequest<any>(
         "AddTask",
         { json: payload },
-        "adddata",
+        "add-data",
       );
 
-      if (result.ProcessCode === 0) {
+      if (result.Processcode === 0) {
         refreshFolder();
         refreshCounts();
         toast.success("Task added!", { id: "quick-add" });

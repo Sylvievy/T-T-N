@@ -109,7 +109,7 @@ export const AddTaskChecklist = ({
                 </span>
               </div>
 
-              <button
+              {/* <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -119,7 +119,7 @@ export const AddTaskChecklist = ({
                 className="opacity-0 group-hover:opacity-100 p-1 text-slate-300 hover:text-red-500 transition-all"
               >
                 <Trash2 size={13} />
-              </button>
+              </button> */}
             </div>
           );
         })}

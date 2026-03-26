@@ -70,7 +70,7 @@ export const GetCheckListItems = (taskId: string) =>
   postRequest<Checklist[]>("GetCheckListItems", { TaskID: taskId });
 
 export const AddChecklist = async (payload: any) => {
-  return await postRequest<any>("AddChecklist", { json: payload }, "adddata");
+  return await postRequest<any>("AddChecklist", { json: payload }, "add-data");
 };
 
 export const UpdateChecklistItemStatus = (
@@ -85,7 +85,7 @@ export const UpdateChecklistItemStatus = (
   return postRequest<any>(
     "UpdateChecklistItemStatus",
     { json: payload },
-    "updatedata",
+    "update-data",
   );
 };
 
@@ -100,27 +100,27 @@ export const DeleteChecklistItem = (checklistItemId: string) => {
 // --- TASK STATUS SERVICES ---
 
 export const AddTask = async (params: AddTaskParams) => {
-  return await postRequest<any>("AddTask", { json: params }, "adddata");
+  return await postRequest<any>("AddTask", { json: params }, "add-data");
 };
 
 export const EditTask = async (params: EditTaskParams) => {
-  return await postRequest<any>("EditTask", { json: params }, "updatedata");
+  return await postRequest<any>("EditTask", { json: params }, "update-data");
 };
 
 export const UpdateTaskStatus = (params: UpdateTaskStatusParams) => {
-  return postRequest<any>("UpdateTaskStatus", { json: params }, "updatedata");
+  return postRequest<any>("UpdateTaskStatus", { json: params }, "update-data");
 };
 
 export const UpdateReadStatus = (params: UpdateRead) => {
-  return postRequest<any>("UpdateReadStatus", { json: params }, "updatedata");
+  return postRequest<any>("UpdateReadStatus", { json: params }, "update-data");
 };
 
 // --- FEEDBACK ---
 // Add to TaskQService.ts
 
 export const GetTaskQFeedback = () =>
-  postRequest<FeedbackLog[]>("GetTasQFeedBack", {}, "data");
+  postRequest<FeedbackLog[]>("GetTaskQFeedBack", {}, "tasks");
 
 export const AddTaskQFeedback = (params: AddTaskQFeedbackParams) => {
-  return postRequest<any>("AddTasQFeedBack", { json: params }, "adddata");
+  return postRequest<any>("AddTaskQFeedBack", { json: params }, "add-data");
 };

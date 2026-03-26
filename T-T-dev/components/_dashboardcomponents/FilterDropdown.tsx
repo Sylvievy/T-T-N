@@ -55,6 +55,11 @@ export const FilterDropdown = ({
       key: "assignedBy",
       options: masterOptions.users,
     },
+    {
+      label: "Current Owner",
+      key: "user", // This key maps to 'matchesUser' logic in your hook
+      options: masterOptions.users,
+    },
     // { label: "Next Owner", key: "user", options: masterOptions.users },
   ];
 

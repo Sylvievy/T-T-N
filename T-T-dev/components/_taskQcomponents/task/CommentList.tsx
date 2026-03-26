@@ -41,7 +41,8 @@ export const CommentList = ({
       ) : (
         <>
           {sortedComments.map((comment, index) => {
-            const isMe = myId === comment.AspNetUserId;
+            const isMe = myId === comment.UserId;
+
             const currentDateGroup = formatDate(comment.CommentedDate);
             const prevDateGroup =
               index > 0

@@ -149,7 +149,7 @@ export const TaskHistoryChart = ({ data }: Props) => {
     data.forEach((item) => {
       const date = item.EndDate.split("T")[0];
       if (!byDate[date]) byDate[date] = {};
-      byDate[date][item.Category] = parseInt(item.ActiveTasks, 10);
+      byDate[date][item.Category] = Number(item.ActiveTasks) || 0;
       categorySet.add(item.Category);
     });
 

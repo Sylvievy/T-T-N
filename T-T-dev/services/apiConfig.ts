@@ -4,8 +4,8 @@ import { DashboardRequestParam } from "./dashboard/DashboardParams";
 import { GlobalParams } from "./GlobalParams";
 
 // --- CONFIGURATION ---
-const API_BASE_URL = "https://imsdev.akrais.com:8444/AKRARealityAPI/api";
-const DATA_ENDPOINT = "/data/";
+const API_BASE_URL = "https://taskq-api.onrender.com/api/";
+const DATA_ENDPOINT = "/tasks/";
 
 // --- AXIOS INSTANCE ---
 const apiClient = axios.create({
@@ -29,19 +29,70 @@ apiClient.interceptors.request.use(
   (error: any) => Promise.reject(error),
 );
 
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 // ---RESPONSE INTERCEPTOR ---
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.warn(
-        "Unauthorized! Clearing storage and redirecting to login...",
-      );
-      localStorage.removeItem("taskQ_bearer_token");
+  async (error) => {
+    const originalRequest = error.config;
 
-      // Force redirect to login page
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
+    // Check if error is 401 and we haven't already tried to refresh
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        // If a refresh is already in progress, wait in the queue
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return apiClient(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+      const refreshToken = localStorage.getItem("taskQ_refresh_token");
+
+      if (refreshToken) {
+        try {
+          // Call your refresh-token endpoint
+          const resp = await axios.post(
+            "https://taskq-api.onrender.com/api/refresh-token",
+            {
+              refreshToken: refreshToken,
+            },
+          );
+
+          const { token } = resp.data;
+          isRefreshing = false;
+          processQueue(null, token);
+          // Update storage with the new access token
+          localStorage.setItem("taskQ_bearer_token", token);
+
+          // Update the failed request header and retry it
+          originalRequest.headers["Authorization"] = `Bearer ${token}`;
+          return apiClient(originalRequest);
+        } catch (refreshError) {
+          console.error("Refresh token expired. Logging out...");
+          logoutUser();
+          isRefreshing = false;
+          processQueue(refreshError, null);
+          if (typeof window !== "undefined") window.location.href = "/login";
+        }
       }
     }
     return Promise.reject(error);
@@ -70,17 +121,30 @@ export const postRequest = async <T>(
     };
     const normalizedEndpoint = customEndpoint
       ? customEndpoint.startsWith("/")
-        ? customEndpoint
-        : `/${customEndpoint}`
-      : DATA_ENDPOINT;
+        ? customEndpoint.substring(1)
+        : customEndpoint
+      : "tasks";
 
-    const response: AxiosResponse<T> = await apiClient.post(
-      normalizedEndpoint,
-      payload,
-    );
-    return response.data;
+    const isUpdate = normalizedEndpoint.includes("update-data");
+
+    const response: AxiosResponse<any> = isUpdate
+      ? await apiClient.put(normalizedEndpoint, payload)
+      : await apiClient.post(normalizedEndpoint, payload);
+
+    const result = Array.isArray(response.data?.data)
+      ? response.data.data
+      : response.data?.data || response.data;
+
+    return result as T;
   } catch (error) {
     console.error(`API Error [${paramType}]:`, error);
     throw error;
   }
+};
+
+export const logoutUser = () => {
+  localStorage.removeItem("taskQ_bearer_token");
+  localStorage.removeItem("taskQ_user_id");
+  localStorage.removeItem("taskQ_user_name");
+  localStorage.removeItem("taskQ_refresh_token"); // Add this!
 };

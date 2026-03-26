@@ -55,19 +55,16 @@ export const TaskCards = ({
       : null;
 
   const creatorId =
-    task?.CreatorASPNetUserID || // TaskLog
-    // task?.CreatorAspNetUserID ||      // Task
+    task?.CreatorUserID || // TaskLog
+    // task?.CreatorUserID ||      // Task
     null;
 
   // Determine Current Owner (Y)
-  const assignedById =
-    task?.AssignedByASPNetUserID || // TaskLog
-    // task?.CurrentOwnerAspNetUserID ||     // Task
-    null;
+  const assignedById = task?.AssignedByUserID || null;
 
   // Determine Next Owner / Delegate (Z)
   const currentownerId =
-    task?.CurrentOwnerASPNetUserID || // TaskLog
+    task?.CurrentOwnerUserID || // TaskLog
     // task?.NextOwnerAspNetUserID ||        // Task
     null;
   const isAssignerX = String(myId) === String(creatorId);
@@ -82,7 +79,7 @@ export const TaskCards = ({
     extraParams = {},
   ) => {
     const isSuccess = await updateTaskStatus(
-      task.TaskID,
+      String(task.TaskID),
       action,
       userComment,
       extraParams,

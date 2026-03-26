@@ -25,16 +25,15 @@ export const filterTasks = (
     // Replaces the old TaskCategory logic with TaskType
     const matchesTab =
       !filters.tab ||
-      filters.tab === "MyTasks" ||
-      filters.tab === "AssignedByMe" ||
+      filters.tab === "myTasks" ||
+      filters.tab === "assignedByMe" ||
       task.TaskType === filters.tab;
 
     let matchesOwner = true;
-    if (filters.tab === "MyTasks") {
-      matchesOwner =
-        task.MyTaskList === "1" || task.AssignedBy?.trim() === userName;
-    } else if (filters.tab === "AssignedByMe") {
-      matchesOwner = task.AssignedByMe === "1";
+    if (filters.tab === "myTasks") {
+      matchesOwner = task.myTasks === 1 || task.AssignedBy?.trim() === userName;
+    } else if (filters.tab === "assignedByMe") {
+      matchesOwner = task.assignedByMe === 1;
     }
 
     return (

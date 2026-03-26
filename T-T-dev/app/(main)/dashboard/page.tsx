@@ -291,7 +291,7 @@ const DashboardContent = () => {
       <AnimatePresence>
         {activeCommentTasks.map((taskId, index) => {
           // Find the task object to get the title
-          const task = taskLog.find((t) => t.TaskID === taskId);
+          const task = taskLog.find((t) => String(t.TaskID) === taskId);
           if (!task) return null;
 
           return (
@@ -312,13 +312,13 @@ const DashboardContent = () => {
               className="cursor-grab active:cursor-grabbing"
             >
               <CommentBox
-                taskId={task.TaskID}
+                taskId={String(task.TaskID)}
                 taskTitle={task.TaskTitle}
                 comments={(comments || []).filter(
-                  (c) => c.TaskID === task.TaskID,
+                  (c) => String(c.TaskID) === String(task.TaskID),
                 )}
-                onClose={() => handleCommentToggle(task.TaskID)}
-                onSendMessage={(text) => addComment(task.TaskID, text)}
+                onClose={() => handleCommentToggle(String(task.TaskID))}
+                onSendMessage={(text) => addComment(String(task.TaskID), text)}
               />
             </motion.div>
           );

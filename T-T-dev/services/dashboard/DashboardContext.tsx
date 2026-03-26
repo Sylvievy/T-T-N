@@ -47,8 +47,8 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
     sortOrder: "desc",
     quickFilter: null,
     dateRange: {
-      from: format(subDays(new Date(), 7), "yyyy-MM-dd"),
-      to: format(new Date(), "yyyy-MM-dd"),
+      from: format(subDays(new Date(), 7), "MM-dd-yyyy"),
+      to: format(new Date(), "MM-dd-yyyy"),
     },
   };
 

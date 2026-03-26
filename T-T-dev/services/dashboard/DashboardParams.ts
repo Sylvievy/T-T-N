@@ -10,38 +10,38 @@ export interface TypePriority {
   TaskType: string;
   Priority: string;
   CurrentOwnerName: string;
-  NextOwnerName: string;
+  NextOwnerName: string | null;
 }
 
 export interface TaskStatus {
+  TaskID: string;
   StatusName: string;
   CurrentOwnerName: string;
-  NextOwnerName: string;
+  NextOwnerName: string | null;
 }
 
 export interface ByUsers {
   UserName: string;
   TaskTypeName: string;
   ColorCode: string | null;
-  TotalTasks: string;
+  TotalTasks: number;
 }
 
 export interface SummaryCount {
-  DueToday: string;
-  DueTomorrow: string;
-  PastDue: string;
-  Completed: string;
-  Unread: string;
-  TodoCount: string;
+  DueToday: number;
+  DueTomorrow: number;
+  PastDue: number;
+  Unread: number;
+  TodoCount: number;
 }
 
 export interface TaskHistoryCategory {
   EndDate: string;
   Category: string;
-  ActiveTasks: string;
-  NewTasks: string;
-  CompletedTasks: string;
-  TasksWithActivity: string;
+  ActiveTasks: number;
+  NewTasks: number;
+  CompletedTasks: number;
+  TasksWithActivity: number;
 }
 
 export interface Comments {
@@ -51,7 +51,7 @@ export interface Comments {
   CommentText: string;
   CommentedDate: string;
   CommentedByUserId: string;
-  AspNetUserId: string;
+  UserId: string | null;
   CommentedByName: string;
   IsSystemComment: boolean;
 }

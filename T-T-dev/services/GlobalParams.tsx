@@ -8,8 +8,8 @@ export type GlobalParams =
   | "UpdateTaskStatus"
   | "AddTask"
   | "EditTask"
-  | "GetTasQFeedBack"
-  | "AddTasQFeedBack"
+  | "GetTaskQFeedBack"
+  | "AddTaskQFeedBack"
   | "GetCheckListItems";
 
 export interface InsertCommentParams {
@@ -30,7 +30,7 @@ export interface AddChecklistParams {
 
 export interface Checklist {
   CheckListItemID: string;
-  TaskID: string;
+  TaskID: number;
   ItemText: string;
   ItemMetaData: null;
   ItemIsCompleted: boolean;
@@ -87,13 +87,13 @@ export interface FeedbackLog {
 }
 
 export interface TaskLog {
-  IsPastDue: string;
-  IsDueToday: string;
-  IsDueTomorrow: string;
-  IsUnread: string;
-  IsTodo: string;
-  AssignedByMe: string;
-  MyTaskList: string;
+  IsPastDue: number;
+  IsDueToday: number;
+  IsDueTomorrow: number;
+  IsUnread: number;
+  IsTodo: number;
+  assignedByMe: number;
+  myTasks: number;
 
   // Task Details
   TaskID: string;
@@ -106,7 +106,7 @@ export interface TaskLog {
   TaskCreatedOn: string;
   TaskDueDate: string;
   TaskDueTime: string;
-  TaskUpdateTime: string; // Added this
+  TaskUpdateTime: string;
 
   // Ownership and IDs
   TaskOwnerUserID: string;
@@ -115,13 +115,9 @@ export interface TaskLog {
   TaskSecondaryContactUserID: string | null;
   UserGroupID: string | null;
 
-  // ASP.NET User IDs (Updated from AspNetUserId)
-  // TaskCurrentOwnerASPNetUserID: string;
-  // TaskCreatorASPNetUserID: string;
-  // AspNetUserId?: string;
-  CreatorASPNetUserID: string; // Added this
-  AssignedByASPNetUserID: string; // Added this
-  CurrentOwnerASPNetUserID?: string | null; // Kept as optional if used elsewhere
+  CreatorUserID: string; // Added this
+  AssignedByUserID: string; // Added this
+  CurrentOwnerUserID?: string | null; // Kept as optional if used elsewhere
 
   // Metadata
   TaskPriorityID: string;

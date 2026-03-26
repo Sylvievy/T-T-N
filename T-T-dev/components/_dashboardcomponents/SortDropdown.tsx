@@ -23,8 +23,8 @@ export const SortDropdown = () => {
     { label: "Task Name", key: "TaskTitle" },
     { label: "Category", key: "TaskType" },
     { label: "Priority", key: "Priority" },
-    { label: "Current Owner", key: "AssignedUser" },
-    { label: "Next Owner", key: "CurrentOwnerName" },
+    { label: "Assigned By", key: "AssignedBy" },
+    { label: "Current Owner", key: "CurrentOwner" },
   ];
 
   return (

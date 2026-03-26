@@ -30,7 +30,8 @@ const TasksByUsers = ({ data }: Props) => {
   const processedData = useMemo(() => {
     const aggregated = data.reduce((acc, curr) => {
       let existing = acc.find((item) => item.username === curr.UserName);
-      const taskCount = parseInt(curr.TotalTasks, 10) || 0;
+      const taskCount = Number(curr.TotalTasks) || 0;
+
       if (!existing) {
         existing = { username: curr.UserName, total: 0 };
         taskTypes.forEach((type) => (existing![type] = 0));

@@ -10,22 +10,22 @@ export type TaskQRequestParam =
   | "GetCompletedTasks"
   | "GetDisabledTasks"
   | "GetTasksByCategoryCount"
+  | "GetCountByTaskList"
   | "GetTasksByCategory"
   | "GetUsers"
-  | "GetCountByTaskList"
   | "GetCategory"
   | "UpdateReadStatus";
 
 //sidebar folder count
 export interface AllCounts {
-  InboxCount: string;
-  SentCount: string;
-  DueTodayCount: string;
-  UnreadCount: string;
-  PastDueCount: string;
-  TodoCount: string;
-  CompletedCount: string;
-  DisabledCount: string;
+  InboxCount: number;
+  SentCount: number;
+  DueTodayCount: number;
+  UnreadCount: number;
+  PastDueCount: number;
+  TodoCount: number;
+  CompletedCount: number;
+  DisabledCount: number;
 }
 
 export interface TaskTypeCount {
@@ -38,7 +38,7 @@ export interface TaskTypeCount {
 export interface CategoryCount {
   TypeID: string;
   TaskType: string;
-  TaskCount: string;
+  TaskCount: number;
 }
 
 export interface TaskCategory {}
@@ -54,19 +54,18 @@ export interface Category {
 
 export interface Users {
   UserID: number;
+  NodeUserID: string | null;
+
   UserName: string;
   UserEmail: string;
-  CountryCode: string;
-  MobileNumber: string;
-  AspNetUserID: string | null;
 }
 
 export interface Task {
   TaskID: string;
   TaskDescription: string;
-  CreatorAspNetUserID: string;
-  AssignedByAspNetUserID: string;
-  CurrentOwnerAspNetUserID: string | null;
+  CreatorUserID: string;
+  AssignedByUserID: string;
+  CurrentOwnerUserID: string | null;
   AssignedBy: string;
   TaskTitle: string;
   TaskDueDate: string;

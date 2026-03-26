@@ -38,14 +38,14 @@ export const useTaskLogFilters = (tasks: TaskLog[], filters: any) => {
       const matchesUser =
         !chartUser ||
         task.CurrentOwner?.trim() === chartUser ||
-        task.AssignedBy?.trim() === chartUser ||
+        // task.AssignedBy?.trim() === chartUser ||
         task.TaskOwnerUserID === chartUser;
 
       let matchesTab = true;
-      if (filters.tab === "MyTasks") {
-        matchesTab = task.MyTaskList === "1";
-      } else if (filters.tab === "AssignedByMe") {
-        matchesTab = task.AssignedByMe === "1";
+      if (filters.tab === "myTasks") {
+        matchesTab = task.myTasks === 1;
+      } else if (filters.tab === "assignedByMe") {
+        matchesTab = task.assignedByMe === 1;
       }
 
       let matchesQuickFilter = true;
@@ -57,16 +57,16 @@ export const useTaskLogFilters = (tasks: TaskLog[], filters: any) => {
 
         switch (filters.quickFilter) {
           case "DueToday":
-            matchesQuickFilter = task.IsDueToday === "1";
+            matchesQuickFilter = task.IsDueToday === 1;
             break;
           case "DueTomorrow":
-            matchesQuickFilter = task.IsDueTomorrow === "1";
+            matchesQuickFilter = task.IsDueTomorrow === 1;
             break;
           case "PastDue":
-            matchesQuickFilter = task.IsPastDue === "1";
+            matchesQuickFilter = task.IsPastDue === 1;
             break;
           case "Unread":
-            matchesQuickFilter = task.IsUnread === "1";
+            matchesQuickFilter = task.IsUnread === 1;
             break;
           case "Todo":
           case "TodoCount": // Your items array uses "TodoCount" as a key

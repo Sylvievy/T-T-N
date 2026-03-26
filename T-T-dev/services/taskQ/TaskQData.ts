@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import * as taskQService from "./TaskQService";
 import * as dashboardService from "../dashboard/DashboardService";
 import {
@@ -151,10 +151,10 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
     async (checklistItemId: string, taskId: string) => {
       try {
         const result = await taskQService.DeleteChecklistItem(checklistItemId);
-        // Checking for ProcessCode 0 based on your Postman screenshot
+        // Checking for processCode 0 based on your Postman screenshot
         if (
           result &&
-          (result.ProcessCode === 0 || result.data?.ProcessCode === 0)
+          (result.processCode === 0 || result.data?.processCode === 0)
         ) {
           await fetchChecklist(taskId);
           return true;
@@ -273,8 +273,8 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
       try {
         const result = await taskQService.AddTask(params);
 
-        if (result && result.ProcessCode === 0) {
-          const message = result.processMessage || "";
+        if (result && result.processCode === 0) {
+          const message = result.message || "";
           const match = message.match(/\d+$/);
           const newTaskID = match ? match[0] : null;
 
@@ -294,20 +294,19 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
   );
 
   const updateReadStatus = useCallback(
-    async (taskId: number) => {
+    async (taskId: number | string) => {
+      const numericId = Number(taskId); // Normalize
       setData((prev) => ({
         ...prev,
         tasks: prev.tasks.map((t) =>
-          Number(t.TaskID) === taskId
-            ? { ...t, IsRead: true, IsUnread: "0" }
-            : t,
+          Number(t.TaskID) === taskId ? { ...t, IsRead: true, IsUnread: 0 } : t,
         ),
       }));
 
       try {
-        const res = await taskQService.UpdateReadStatus({ TaskID: taskId });
+        const res = await taskQService.UpdateReadStatus({ TaskID: numericId });
 
-        if (res && (res.ProcessCode === 0 || res.data?.ProcessCode === 0)) {
+        if (res && (res.processCode === 0 || res.data?.processCode === 0)) {
           fetchCounts();
           return true;
         }
@@ -334,7 +333,7 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
         ...extraParams,
       });
 
-      if (res && (res.ProcessCode === 0 || res.data?.ProcessCode === 0)) {
+      if (res && (res.processCode === 0 || res.data?.processCode === 0)) {
         await refreshFolder();
         await fetchComments();
 
@@ -374,8 +373,8 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
   // Normalize any task shape into consistent fields for role resolution
   const normalizeTask = (task: any) => ({
     ...task,
-    _creatorId: task.CreatorAspNetUserID ?? null,
-    _currentOwnerId: task.CurrentOwnerAspNetUserID ?? null,
+    _creatorId: task.CreatorUserID ?? null,
+    _currentOwnerId: task.CurrentOwnerUserID ?? null,
     _nextOwnerId: task.NextOwnerAspNetUserID ?? null,
   });
 
@@ -384,7 +383,7 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
       try {
         const res = await taskQService.EditTask(params);
 
-        if (res && res.ProcessCode === 0) {
+        if (res && res.processCode === 0) {
           if (newChecklistItems.length > 0) {
             await addChecklistBatch(params.TaskID, newChecklistItems);
           }
@@ -415,17 +414,50 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
     [refreshFolder, setSelectedTask, fetchComments],
   );
 
-  useEffect(() => {
-    fetchCounts();
-    fetchComments();
-    fetchMetadata();
-    fetchCategoryCounts();
-  }, [fetchCounts, fetchComments, fetchMetadata, fetchCategoryCounts]);
+  // Add this ref at the top of useTaskQData
+  const hasInitialized = useRef(false);
 
   useEffect(() => {
-    fetchFolderData(activeFolder);
-  }, [activeFolder, fetchFolderData]);
+    // STRICT GUARD: If we already started initializing, do nothing.
+    if (hasInitialized.current) return;
 
+    const token = localStorage.getItem("taskQ_bearer_token");
+    if (!token) return;
+
+    hasInitialized.current = true;
+
+    const bootStrap = async () => {
+      try {
+        // 1. Get Sidebar Counts FIRST (Fastest)
+        await fetchCounts();
+
+        // 2. Add a literal gap (300ms) to let the server breathe
+        await new Promise((resolve) => setTimeout(resolve, 300));
+
+        // 3. Get Metadata (Users/Categories)
+        await fetchMetadata();
+
+        // 4. Everything else can be bundled or slightly delayed
+        setTimeout(() => {
+          fetchCategoryCounts();
+          fetchComments();
+          // fetchFeedback(); // If you have this
+        }, 500);
+      } catch (err) {
+        console.error("Bootstrap failed:", err);
+        // Reset if it failed so user can try again on refresh
+        hasInitialized.current = false;
+      }
+    };
+
+    bootStrap();
+  }, []); // Empty dependency array
+  useEffect(() => {
+    // Only fetch folder data if we aren't currently "bootstrapping"
+    if (hasInitialized.current) {
+      fetchFolderData(activeFolder);
+    }
+  }, [activeFolder]);
   return {
     ...data,
     selectedTask,

@@ -87,15 +87,15 @@ export const useDashboardData = () => {
         : summaryRaw;
 
       setData({
-        typePriority: priority,
-        taskStatus: status,
+        typePriority: priority || [],
+        taskStatus: status || [],
         summary: normalizedSummary || {},
-        tasksByUsers: users,
-        taskLog: list,
-        comments: comments,
+        tasksByUsers: users || [],
+        taskLog: list || [],
+        comments: comments || [],
         loading: false,
         error: null,
-        historyData: history,
+        historyData: history || [],
       });
     } catch (err) {
       setData((prev) => ({ ...prev, loading: false, error: "Failed to load" }));

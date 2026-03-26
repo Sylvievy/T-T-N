@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+// Removed: import Link from "next/link";
 
 interface LoginFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
@@ -60,15 +61,23 @@ export function LoginForm({ onSubmit, error, isLoading }: LoginFormProps) {
                 </div>
               </div>
 
-              {/* Error Message Section */}
-              {error && (
-                <p
-                  className="text-sm font-medium text-destructive animate-in fade-in zoom-in duration-200"
-                  role="alert"
+              <div className="flex justify-between text-xs font-medium text-slate-600">
+                <a
+                  href="/signup"
+                  className="hover:text-red-800 transition-colors"
                 >
-                  {error}
-                </p>
-              )}
+                  Sign Up
+                </a>
+                <a
+                  href="/forgot-password"
+                  title="Coming soon!"
+                  className="hover:text-red-800 transition-colors"
+                >
+                  Forgot Password
+                </a>
+              </div>
+
+              {error && <p className="text-sm text-red-600">{error}</p>}
 
               <Button
                 type="submit"

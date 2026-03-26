@@ -104,19 +104,21 @@ const Tasklist = ({ data }: TaskListProps) => {
           {paginatedTasks.map((task) => {
             const isAssignerX = [
               String(task.TaskOwnerUserID),
-              String(task.CreatorASPNetUserID),
+              String(task.CreatorUserID),
             ].some((id) => id.trim() === String(myId).trim());
             return (
               <TaskCards
                 key={task.TaskID}
                 task={task}
                 comments={(comments || []).filter(
-                  (c) => c.TaskID === task.TaskID,
+                  (c) => c.TaskID === String(task.TaskID),
                 )}
-                isActiveComment={activeCommentTasks.includes(task.TaskID)}
-                onCommentToggle={() => handleCommentToggle(task.TaskID)}
+                isActiveComment={activeCommentTasks.includes(
+                  String(task.TaskID),
+                )}
+                onCommentToggle={() => handleCommentToggle(String(task.TaskID))}
                 formatDate={formatDate}
-                onSendMessage={(text) => addComment(task.TaskID, text)}
+                onSendMessage={(text) => addComment(String(task.TaskID), text)}
                 onDoubleClick={() => openPopup(task)}
                 isAssignerX={isAssignerX}
                 onActionSuccess={onActionSuccess}

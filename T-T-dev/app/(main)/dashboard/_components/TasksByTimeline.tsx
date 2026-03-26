@@ -46,14 +46,14 @@ const TasksByTimeline = ({ data }: Props) => {
     },
   ];
 
-  const counts = items.map((item) => parseInt(data[item.key]) || 0);
+  const counts = items.map((item) => data[item.key] || 0);
   const rawMax = Math.max(...counts, 0);
   const maxValue = rawMax === 0 ? 100 : Math.ceil(rawMax / 100) * 100;
 
   return (
     <div className="flex flex-col gap-4 w-full px-3 pt-3">
       {items.map((item) => {
-        const count = parseInt(data[item.key]) || 0;
+        const count = data[item.key] || 0;
         const widthPercentage = (count / maxValue) * 100;
 
         const isActive = filters.quickFilter === item.key;

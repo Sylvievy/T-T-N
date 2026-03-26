@@ -20,7 +20,7 @@ export default function Page() {
     const password = formData.get("password") as string;
 
     try {
-      const result = await loginUser({ email, password });
+      const result = await loginUser({ username: email, password });
       if (result) {
         router.push("/dashboard");
       } else {

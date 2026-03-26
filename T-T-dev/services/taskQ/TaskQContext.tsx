@@ -168,7 +168,7 @@ export const TaskQProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (taskData.selectedTask?.TaskID) {
-      taskData.fetchChecklist(taskData.selectedTask.TaskID);
+      taskData.fetchChecklist(String(taskData.selectedTask.TaskID));
     }
   }, [taskData.selectedTask, taskData.fetchChecklist]);
 
@@ -189,8 +189,8 @@ export const TaskQProvider = ({ children }: { children: ReactNode }) => {
 
     return Object.entries(counts).map(([name, count]) => ({
       TaskType: name,
-      TaskCount: count.toString(),
-      TypeID: name, // Using name as ID for filtering
+      TaskCount: count,
+      TypeID: name,
     })) as CategoryCount[];
   }, [taskData.tasks]);
 

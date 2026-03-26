@@ -122,13 +122,10 @@ const TaskDetails = ({ isModal = false, taskOverride }: TaskDetailsProps) => {
       ? localStorage.getItem("taskQ_asp_net_user_id")
       : null;
 
-  const creatorId =
-    task?.CreatorAspNetUserID || task?.TaskCreatorASPNetUserID || null;
+  const creatorId = task?.CreatorUserID || task?.TaskCreatorUserID || null;
 
   const AssignedById =
-    task?.CurrentOwnerAspNetUserID ||
-    task?.TaskCurrentOwnerASPNetUserID ||
-    null;
+    task?.CurrentOwnerUserID || task?.TaskCurrentOwnerUserID || null;
 
   const CurrentOwnerId =
     task?.NextOwnerAspNetUserID || task?.TaskNextOwnerID || null;
@@ -488,9 +485,10 @@ const TaskDetails = ({ isModal = false, taskOverride }: TaskDetailsProps) => {
                         if (success) setNewCheckItem("");
                       }
                     }}
-                    onRemove={(_, id) =>
-                      deleteCheckItem(String(id), task.TaskID)
-                    }
+                    onRemove={(_, id) => {
+                      console.log("Delete is disabled");
+                      // deleteCheckItem(String(id), task.TaskID)
+                    }}
                     onToggle={(_, id, currentStatus) => {
                       if (id)
                         toggleCheckItem(

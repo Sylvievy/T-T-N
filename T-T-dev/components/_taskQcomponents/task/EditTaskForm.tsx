@@ -61,7 +61,7 @@ const EditTaskForm = ({
     CommentText: "",
 
     AssignToUserID: String(
-      task.CurrentOwnerAspNetUserID ||
+      task.CurrentOwnerUserID ||
         task.TaskCurrentOwnerID ||
         task.AssignToUserID ||
         "",
@@ -133,7 +133,7 @@ const EditTaskForm = ({
   const selectedUserName = users?.find(
     (u) =>
       u.UserID.toString() === formData.AssignToUserID ||
-      u.AspNetUserID === formData.AssignToUserID,
+      u.NodeUserID === formData.AssignToUserID,
   )?.UserName;
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -183,7 +183,7 @@ const EditTaskForm = ({
     const userObj = users?.find(
       (u) =>
         u.UserID.toString() === formData.AssignToUserID ||
-        u.AspNetUserID === formData.AssignToUserID,
+        u.NodeUserID === formData.AssignToUserID,
     );
 
     const payload = {

@@ -81,12 +81,12 @@ export const TaskBadges = ({
       activeStyle: "bg-[#30493b] text-white border-slate-800",
     },
     {
-      id: "MyTasks",
+      id: "myTasks",
       label: "My Tasks",
       activeStyle: "bg-[#30493b] text-white border-blue-600",
     },
     {
-      id: "AssignedByMe",
+      id: "assignedByMe",
       label: "Assigned by me",
       activeStyle: "bg-[#30493b] text-white border-blue-600",
     },
@@ -117,7 +117,7 @@ export const TaskBadges = ({
 
           {badges.map((badge) => {
             const isOwnership =
-              badge.id === "MyTasks" || badge.id === "AssignedByMe";
+              badge.id === "myTasks" || badge.id === "assignedByMe";
             const isAll = badge.id === "All";
             const isActive = isAll
               ? !filters.tab && !filters.priority
@@ -134,10 +134,10 @@ export const TaskBadges = ({
                 filters.status ||
                 filters.search;
               count = isAnyFilterActive ? filteredCount : taskLog.length;
-            } else if (badge.id === "MyTasks") {
-              count = taskLog.filter((t) => t.MyTaskList === "1").length;
-            } else if (badge.id === "AssignedByMe") {
-              count = taskLog.filter((t) => t.AssignedByMe === "1").length;
+            } else if (badge.id === "myTasks") {
+              count = taskLog.filter((t) => t.myTasks !== 1).length;
+            } else if (badge.id === "assignedByMe") {
+              count = taskLog.filter((t) => t.assignedByMe !== 1).length;
             } else if (!isOwnership) {
               count = typePriority.filter(
                 (tp) => tp.Priority === badge.id,

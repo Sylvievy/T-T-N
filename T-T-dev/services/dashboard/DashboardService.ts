@@ -37,5 +37,5 @@ export const GetTaskHistoryCategoryWise = (
 export const GetComments = () => postRequest<Comments[]>("GetComments");
 
 export const InsertComment = (params: InsertCommentParams) => {
-  return postRequest<any>("InsertComment", { json: params }, "adddata");
+  return postRequest<any>("InsertComment", { json: params }, "add-data");
 };

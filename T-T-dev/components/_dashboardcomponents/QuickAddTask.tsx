@@ -75,22 +75,23 @@ export const QuickAddTask = () => {
   );
 
   const myNumericId = useMemo(() => {
-    const loggedInName = localStorage.getItem("taskQ_user_name");
-    if (!loggedInName || !users.length) return null;
+    if (typeof window === "undefined" || !users.length) return null;
 
-    // Find the user object where the name matches
-    const currentUser = users.find(
-      (u) =>
-        u.UserName.toLowerCase().trim() === loggedInName.toLowerCase().trim(),
+    const myNodeId = localStorage.getItem("taskQ_user_id");
+
+    if (!myNodeId) return null;
+
+    const currentUser = users.find((u) => u.NodeUserId === myNodeId);
+    console.log("--- DEBUG: SELF IDENTIFICATION ---");
+    console.log("My Login NodeID (from localStorage):", myNodeId);
+    console.log("Matching User Object found:", currentUser);
+    console.log(
+      "Resulting Numeric UserID:",
+      currentUser ? currentUser.UserID : "NOT FOUND",
     );
-
-    return currentUser ? currentUser.UserID : null;
-  }, [
-    users,
-    typeof window !== "undefined"
-      ? localStorage.getItem("taskQ_user_name")
-      : null,
-  ]);
+    //
+    return currentUser ? Number(currentUser.UserID) : null;
+  }, [users]);
 
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) {
@@ -188,9 +189,8 @@ export const QuickAddTask = () => {
     const innerText = inputRef.current?.innerText || "";
     if (!innerText.trim() && tokens.length === 0) return;
 
-    const currentUserId = myNumericId || 123;
+    const currentUserId = Number(myNumericId) || 195;
 
-    // 1. Identify the first occurrence of any trigger
     const userToken = tokens.find((t) => t.type === "user");
     const categoryTokens = tokens.filter((t) => t.type === "category");
     const dateToken = tokens.find((t) => t.type === "date");
@@ -242,7 +242,7 @@ export const QuickAddTask = () => {
         "add-data",
       );
 
-      if (result.Processcode === 0) {
+      if (result.processCode === 0) {
         refreshFolder();
         refreshCounts();
         toast.success("Task added!", { id: "quick-add" });

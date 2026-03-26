@@ -30,8 +30,8 @@ export const GlobalQuickAdd = () => {
             drag
             dragMomentum={false}
             // Keep your specific offset logic
-            initial={{ opacity: 0, y: 55, x: 40, scale: 0.95 }}
-            animate={{ opacity: 1, y: 55, x: 40, scale: 1 }}
+            initial={{ opacity: 0, y: 55, x: 35, scale: 0.95 }}
+            animate={{ opacity: 1, y: 55, x: 35, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             className="mb-2 w-[475px] bg-white rounded-sm shadow-2xl border border-slate-200 relative"
           >
@@ -56,7 +56,7 @@ export const GlobalQuickAdd = () => {
       {/* 2. PERSISTENT OPTIONS */}
       {/* We hide these when the Action Box is open to keep the UI clean */}
       {!isQuickAddOpen && (
-        <div className="flex flex-row items-end">
+        <div className="flex flex-col items-end">
           <MenuButton
             icon={<MessageSquare size={12} />}
             label="Feedback"
@@ -75,8 +75,8 @@ export const GlobalQuickAdd = () => {
 
 const MenuButton = ({ icon, label, onClick }: any) => (
   <motion.div
-    initial={{ opacity: 0, x: 10, y: -10 }}
-    animate={{ opacity: 1, x: -50, y: 5 }}
+    initial={{ opacity: 0, x: 30, y: -12 }}
+    animate={{ opacity: 1, x: 30, y: -12 }}
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
     className="flex  items-center gap-1 group cursor-pointer"

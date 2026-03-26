@@ -37,6 +37,62 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
   const [selectedTask, setSelectedTask] = useState<Inbox | TaskLog | null>(
     null,
   );
+  const fetchCounts = useCallback(async () => {
+    try {
+      const countsResult = await taskQService.GetAllCounts();
+      setData((prev) => ({
+        ...prev,
+        counts: countsResult[0] || ({} as AllCounts),
+      }));
+    } catch (err) {
+      console.error("Failed to fetch sidebar counts:", err);
+    }
+  }, []);
+  const fetchFolderData = useCallback(
+    async (param: TaskQRequestParam, id?: string) => {
+      setData((prev) => ({ ...prev, loading: true, error: null }));
+      try {
+        const fetchFunction = taskQService[param as keyof typeof taskQService];
+        if (typeof fetchFunction !== "function")
+          throw new Error(`Service ${param} not found`);
+
+        let result;
+        if (param === "GetTasksByCategory") {
+          result = await (fetchFunction as (id: string) => Promise<any>)(
+            id || "",
+          );
+        } else {
+          result = await (fetchFunction as () => Promise<any>)();
+        }
+
+        const tasks = (result || []).map(normalizeTask);
+        setData((prev) => ({ ...prev, tasks, loading: false }));
+        return tasks; // ← return so refreshFolder can use it
+      } catch (err) {
+        setData((prev) => ({
+          ...prev,
+          error: "Failed to fetch data",
+          loading: false,
+        }));
+        return [];
+      }
+    },
+    [],
+  );
+  const refreshFolder = useCallback(async () => {
+    const [freshTasks] = await Promise.all([
+      fetchFolderData(activeFolder),
+      fetchCounts(),
+    ]);
+
+    setSelectedTask((prev) => {
+      if (!prev) return prev;
+      const updated = freshTasks.find(
+        (t: Inbox | TaskLog) => String(t.TaskID) === String(prev.TaskID),
+      );
+      return updated ? normalizeTask(updated) : prev;
+    });
+  }, [activeFolder, fetchFolderData, fetchCounts]);
   const submitFeedback = useCallback(
     async (description: string, page: string) => {
       try {
@@ -100,6 +156,7 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
     try {
       const res = await dashboardService.GetComments();
       setData((prev) => ({ ...prev, comments: res }));
+      await refreshFolder();
     } catch (err) {
       console.error("Failed to fetch comments", err);
     }
@@ -197,6 +254,8 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
 
         if (success) {
           await fetchComments();
+          await refreshFolder();
+
           return true;
         }
         return false;
@@ -207,66 +266,7 @@ export const useTaskQData = (activeFolder: TaskQRequestParam) => {
     [fetchComments],
   );
 
-  const fetchCounts = useCallback(async () => {
-    try {
-      const countsResult = await taskQService.GetAllCounts();
-      setData((prev) => ({
-        ...prev,
-        counts: countsResult[0] || ({} as AllCounts),
-      }));
-    } catch (err) {
-      console.error("Failed to fetch sidebar counts:", err);
-    }
-  }, []);
-
   // TaskQData.tsx
-
-  const fetchFolderData = useCallback(
-    async (param: TaskQRequestParam, id?: string) => {
-      setData((prev) => ({ ...prev, loading: true, error: null }));
-      try {
-        const fetchFunction = taskQService[param as keyof typeof taskQService];
-        if (typeof fetchFunction !== "function")
-          throw new Error(`Service ${param} not found`);
-
-        let result;
-        if (param === "GetTasksByCategory") {
-          result = await (fetchFunction as (id: string) => Promise<any>)(
-            id || "",
-          );
-        } else {
-          result = await (fetchFunction as () => Promise<any>)();
-        }
-
-        const tasks = (result || []).map(normalizeTask);
-        setData((prev) => ({ ...prev, tasks, loading: false }));
-        return tasks; // ← return so refreshFolder can use it
-      } catch (err) {
-        setData((prev) => ({
-          ...prev,
-          error: "Failed to fetch data",
-          loading: false,
-        }));
-        return [];
-      }
-    },
-    [],
-  );
-
-  const refreshFolder = useCallback(async () => {
-    const [freshTasks] = await Promise.all([
-      fetchFolderData(activeFolder),
-      fetchCounts(),
-    ]);
-
-    setSelectedTask((prev) => {
-      if (!prev) return prev;
-      const updated = freshTasks.find(
-        (t: Inbox | TaskLog) => String(t.TaskID) === String(prev.TaskID),
-      );
-      return updated ? normalizeTask(updated) : prev;
-    });
-  }, [activeFolder, fetchFolderData, fetchCounts]);
 
   const addTask = useCallback(
     async (params: AddTaskParams, checklistItems: string[]) => {

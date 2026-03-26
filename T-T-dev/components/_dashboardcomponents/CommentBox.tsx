@@ -28,7 +28,7 @@ const CommentBox = ({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const storedId = localStorage.getItem("taskQ_asp_net_user_id");
+    const storedId = localStorage.getItem("taskQ_user_id");
     setMyId(storedId);
   }, []);
 
@@ -72,12 +72,12 @@ const CommentBox = ({
       dragListener={true}
       className="flex flex-col h-[400px] w-[350px] bg-[#fdfdfd] rounded-xl shadow-2xl border border-slate-300 overflow-hidden"
     >
-      <div className="flex items-center justify-between px-4 py-2 border-b bg-slate-50 cursor-grab active:cursor-grabbing">
-        <h3 className="text-sm font-bold truncate pr-4 text-slate-700">
+      <div className="flex items-center justify-between px-4 py-2 border-b bg-[#a3bfaa] cursor-grab active:cursor-grabbing">
+        <h3 className="text-sm font-bold truncate pr-4 text-slate-000">
           {taskTitle}
         </h3>
         <X
-          className="w-4 h-4 cursor-pointer shrink-0 text-slate-400 hover:text-red-500"
+          className="w-4 h-4 cursor-pointer shrink-0 text-slate-700 hover:text-red-500"
           onClick={onClose}
         />
       </div>

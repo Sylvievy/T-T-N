@@ -38,28 +38,28 @@ export const loginUser = async (credentials: {
       },
     });
 
-    const { token, userid, refreshToken, message } = response.data;
+    // 1. ADD firstName AND lastName TO DESTRUCTURING
+    const { token, userid, refreshToken, message, firstName, lastName } =
+      response.data;
 
     if (token) {
-      // 1. Store the JWT Token
       localStorage.setItem("taskQ_bearer_token", token);
-
-      // 2. Store the User ID (Matches 'userid' from your screenshot)
       localStorage.setItem("taskQ_user_id", userid);
-      localStorage.setItem("taskQ_asp_net_user_id", userid); // Keeping key for backward compatibility
 
-      // 3. Optional: Store Refresh Token if your app needs it later
+      // 2. SAVE THE NAMES TO LOCALSTORAGE
+      if (firstName) localStorage.setItem("taskQ_firstName", firstName);
+      if (lastName) localStorage.setItem("taskQ_lastName", lastName);
+
       if (refreshToken) {
         localStorage.setItem("taskQ_refresh_token", refreshToken);
       }
 
-      console.log(message); // "Login successful"
+      console.log(message);
       return response.data;
     }
 
     return response.data;
   } catch (error: any) {
-    // Node.js usually returns error messages in error.response.data.message
     const serverMessage =
       error.response?.data?.message || "An unknown error occurred";
     console.error("Node Backend Error:", serverMessage);
@@ -70,6 +70,9 @@ export const loginUser = async (credentials: {
 export const logoutUser = () => {
   localStorage.removeItem("taskQ_bearer_token");
   localStorage.removeItem("taskQ_user_id");
-  localStorage.removeItem("taskQ_asp_net_user_id");
+  localStorage.removeItem("taskQ_refresh_token");
+  localStorage.removeItem("taskQ_firstName"); // Added
+  localStorage.removeItem("taskQ_lastName"); // Added
+  localStorage.removeItem("taskQ_user_id");
   localStorage.removeItem("taskQ_user_name");
 };

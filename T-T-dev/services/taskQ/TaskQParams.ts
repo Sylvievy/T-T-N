@@ -54,8 +54,7 @@ export interface Category {
 
 export interface Users {
   UserID: number;
-  NodeUserID: string | null;
-
+  NodeUserId: string | null;
   UserName: string;
   UserEmail: string;
 }

@@ -133,7 +133,7 @@ const EditTaskForm = ({
   const selectedUserName = users?.find(
     (u) =>
       u.UserID.toString() === formData.AssignToUserID ||
-      u.NodeUserID === formData.AssignToUserID,
+      u.NodeUserId === formData.AssignToUserID,
   )?.UserName;
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
@@ -183,7 +183,7 @@ const EditTaskForm = ({
     const userObj = users?.find(
       (u) =>
         u.UserID.toString() === formData.AssignToUserID ||
-        u.NodeUserID === formData.AssignToUserID,
+        u.NodeUserId === formData.AssignToUserID,
     );
 
     const payload = {

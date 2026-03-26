@@ -150,7 +150,7 @@ const AddTaskForm = () => {
     if (!isFormValid) return;
     setIsSubmitting(true);
 
-    const myUserId = localStorage.getItem("taskQ_asp_net_user_id");
+    const myUserId = localStorage.getItem("taskQ_user_id");
     const toastId = "add-task-action";
 
     const payload = {

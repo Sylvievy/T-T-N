@@ -16,17 +16,63 @@ const apiClient = axios.create({
 });
 
 // --- REQUEST INTERCEPTORS ---
-apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("taskQ_bearer_token");
-      if (token) {
-        config.headers.set("Authorization", `Bearer ${token}`);
+// services/apiConfig.ts
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // 1. Only attempt refresh if it's a 401 and not already a retry
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      const refreshToken = localStorage.getItem("taskQ_refresh_token");
+
+      // If no refresh token exists, don't even try; just redirect to login
+      if (!refreshToken) {
+        if (typeof window !== "undefined") window.location.href = "/login";
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            return apiClient(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const resp = await axios.post(
+          "https://taskq-api.onrender.com/api/refresh-token",
+          {
+            refreshToken: refreshToken,
+          },
+        );
+
+        const { token } = resp.data;
+        localStorage.setItem("taskQ_bearer_token", token);
+
+        isRefreshing = false;
+        processQueue(null, token);
+
+        originalRequest.headers["Authorization"] = `Bearer ${token}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        isRefreshing = false;
+        processQueue(refreshError, null);
+        logoutUser();
+        if (typeof window !== "undefined") window.location.href = "/login";
+        return Promise.reject(refreshError);
       }
     }
-    return config;
+    return Promise.reject(error);
   },
-  (error: any) => Promise.reject(error),
 );
 
 let isRefreshing = false;
@@ -66,6 +112,15 @@ apiClient.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
       const refreshToken = localStorage.getItem("taskQ_refresh_token");
+
+      // Inside the interceptor refresh logic
+      const firstName = localStorage.getItem("taskQ_firstName") || "";
+      const lastName = localStorage.getItem("taskQ_lastName") || "";
+
+      // Combine them
+      const fullName = `${firstName} ${lastName}`.trim();
+
+      console.log("Refreshing for user:", fullName);
 
       if (refreshToken) {
         try {
@@ -144,7 +199,8 @@ export const postRequest = async <T>(
 
 export const logoutUser = () => {
   localStorage.removeItem("taskQ_bearer_token");
+  localStorage.removeItem("taskQ_refresh_token");
+  localStorage.removeItem("taskQ_firstName"); // Clear this
+  localStorage.removeItem("taskQ_lastName"); // Clear this
   localStorage.removeItem("taskQ_user_id");
-  localStorage.removeItem("taskQ_user_name");
-  localStorage.removeItem("taskQ_refresh_token"); // Add this!
 };
